@@ -1,0 +1,21 @@
+hosts:
+    - <%= domain %>
+
+# No multisite.
+multisite: <%= multisite %>
+
+# Extensions
+extensions:
+<% extensions.forEach(function (extension) { -%>
+  - <%= extension %>
+<% }) -%>
+
+# PHP Version
+php: <%= php %>
+
+# Database details
+database:
+    name: wordpress
+    user: wordpress
+    password: vagrantpassword
+    prefix: wp_

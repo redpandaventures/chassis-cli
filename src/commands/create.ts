@@ -1,10 +1,13 @@
 import {flags} from '@oclif/command'
-import {spawn} from 'child_process'
-import * as fs from 'fs'
-import * as inquirer from 'inquirer'
-import * as notifier from 'node-notifier'
-import * as path from 'path'
+import ejs from 'ejs'
+import execa from 'execa'
+import fs from 'fs'
+import inquirer from 'inquirer'
+import Listr from 'listr'
+import notifier from 'node-notifier'
+import path from 'path'
 
+import * as configs from '../configs'
 import Base from '../lib/base'
 
 export default class Create extends Base {
@@ -18,32 +21,29 @@ export default class Create extends Base {
     help: flags.help({char: 'h'}),
     name: flags.string({char: 'n', description: 'Name of this project'}),
     domain: flags.string({char: 'd', description: 'Domain for this project'}),
-    php: flags.string({char: 'p', description: 'PHP version'}),
-    multisite: flags.string({char: 'm', description: 'Config multisite'}),
-    extensions: flags.string({char: 'e', description: 'Install Chassis extensions'}),
-    default: flags.string({char: 'D', description: 'Create new Chassis project with default settings'}),
+    php: flags.string({char: 'p', description: 'PHP version', options: configs.php}),
+    multisite: flags.string({char: 'm', description: 'Config multisite', options: configs.multisite.map(option => option.value)}),
+    extensions: flags.string({multiple: true, char: 'e', description: 'Chassis extensions. This flag can be used multiple times.'}),
+    default: flags.boolean({char: 'D', description: 'Create new Chassis project with default settings'}),
+    skipVagrant: flags.boolean({char: 's', description: 'Skip provisioning vagrant box'}),
   }
 
   async run() {
     const {flags} = this.parse(Create)
 
-    const defaults = {
-      name: 'chassis',
-      domain: '',
-      php: '7.2',
-      multisite: 'no',
-      extensions: [],
-    }
-
     let responses: any = await inquirer.prompt([
       {
         name: 'name',
         message: 'What is the name of your project?',
-        default: defaults.name,
+        default: configs.defaults.name,
         when: ! flags.name && ! flags.default,
         validate: answer => {
           let match = answer.match(/^[\w-]+$/)
-          return (match) ? true : 'Please enter a valid name (letters, numbers and dashes)'
+          if (!match)
+            return 'Please enter a valid name (letters, numbers and dashes)'
+          if (fs.existsSync(path.resolve(process.cwd(), answer)))
+            return `A folder named ${params.name} already exists. Please move or rename that folder to continue.`
+          return true
         },
       },
       {
@@ -65,125 +65,75 @@ export default class Create extends Base {
         name: 'php',
         message: 'Which PHP version would you like to use?',
         when: ! flags.php && ! flags.default,
-        choices: ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1', '7.2'],
-        default: defaults.php
+        choices: configs.php,
+        default: configs.defaults.php
       },
       {
         type: 'list',
         name: 'multisite',
         message: 'Enable multisite?',
         when: ! flags.multisite && ! flags.default,
-        choices: [
-          {name: 'No.', value: 'no'},
-          {name: 'Yes, with sub folder.', value: 'subfolder'},
-          {name: 'Yes, with sub domain.', value: 'subdomain'},
-        ],
-        default: defaults.multisite
+        choices: configs.multisite,
+        default: configs.defaults.multisite
       },
       {
         type: 'checkbox',
         name: 'extensions',
         message: 'Which additional extensions would you like to include?',
         when: ! flags.default,
-        choices: [{
-          name: 'Xdebug',
-          value: 'chassis/Xdebug',
-          checked: true,
-        }, {
-          name: 'phpcs',
-          value: 'chassis/phpcs',
-          checked: true,
-        }, {
-          name: 'phpini',
-          value: 'chassis/phpini',
-          checked: true,
-        }, {
-          name: 'yarn',
-          value: 'chassis/yarn',
-          checked: true,
-        }, {
-          name: 'MariaDB',
-          value: 'chassis/MariaDB',
-          checked: true,
-        }, {
-          name: 'nodejs',
-          value: 'chassis/nodejs',
-          checked: true,
-        }, {
-          name: 'Fish',
-          value: 'chassis/Fish',
-          checked: true,
-        }, {
-          name: 'Composer',
-          value: 'chassis/Composer',
-          checked: true,
-        }, {
-          name: 'Tester',
-          value: 'chassis/Tester',
-          checked: true,
-        }, {
-          name: 'MailHog',
-          value: 'chassis/MailHog',
-          checked: false,
-        }, {
-          name: 'SequelPro',
-          value: 'chassis/SequelPro',
-          checked: false,
-        }, {
-          name: 'Cavalcade',
-          value: 'chassis/Cavalcade',
-          checked: false,
-        }, {
-          name: 'Theme Review',
-          value: 'chassis/ThemeReview',
-          checked: false,
-        }, {
-          name: 'xhprof',
-          value: 'chassis/xhprof',
-          checked: false,
-        }, {
-          name: 'Debugging',
-          value: 'chassis/Debugging',
-          checked: false,
-        }, {
-          name: 'phpMyAdmin',
-          value: 'chassis/phpMyAdmin',
-          checked: false,
-        }, {
-          name: 'Query-Monitor',
-          value: 'chassis/Query-Monitor',
-          checked: false,
-        }, {
-          name: 'memcache',
-          value: 'chassis/memcache',
-          checked: false,
-        }, {
-          name: 'db-backup',
-          value: 'chassis/db-backup',
-          checked: false,
-        }, {
-          name: 'local-dev',
-          value: 'chassis/local-dev',
-          checked: false,
-        }, {
-          name: 'VIP-Classic',
-          value: 'stuartshields/chassis-vip-classic',
-          checked: false,
-        }]
+        choices: configs.extensions,
       }
     ])
 
-    const params = {...defaults, ...responses, ...flags}
+    const params = {...configs.defaults, ...responses, ...flags}
     const projectPath = path.resolve(process.cwd(), params.name)
 
-    if(fs.existsSync(projectPath))
-      this.error(`A folder named ${params.name} already exists. Please move or rename that folder to continue.`)
+    const tasks = new Listr([
+      {
+        title: 'Check if folder exists',
+        enabled: () => !!flags.name,
+        task: () => {
+          if (fs.existsSync(projectPath))
+            throw new Error(`A folder named ${params.name} already exists. Please move or rename that folder to continue.`)
+        }
+      },
+      {
+        title: 'Clone chassis from Github',
+        task: () => execa(
+          'git',
+          ['clone', 'https://github.com/Chassis/Chassis', params.name, '--depth', '1']
+        )
+      },
+      {
+        title: 'Create config file',
+        task: () => ejs.renderFile(
+          path.resolve(__dirname, '../templates/_config.local.yaml'),
+          params,
+          {},
+          (err, str) => {
+            if (err)
+              throw err
+            fs.writeFileSync(`${projectPath}/config.local.yaml`, str)
+          }
+        )
+      },
+      {
+        title: 'Boot up the vagrant box',
+        enabled: () => !flags.skipVagrant,
+        task: () => execa('vagrant', ['up'], {cwd: projectPath})
+      },
+    ])
+
+    this.log(`Create new Chassis project at ${projectPath}`)
+
+    await tasks.run().catch(err => {
+      this.error(err.message)
+    })
 
     notifier.notify({
-      title: 'Completed!',
-      message: 'Your new Chassis project is ready',
+      title: 'Your new Chassis project is ready!',
+      message: 'Click to open it in the browser.',
       sound: true,
-      open: '',
     })
   }
 }
