@@ -39,10 +39,13 @@ export default class Create extends Base {
         when: ! flags.name && ! flags.default,
         validate: answer => {
           let match = answer.match(/^[\w-]+$/)
+
           if (!match)
             return 'Please enter a valid name (letters, numbers and dashes)'
+
           if (fs.existsSync(path.resolve(process.cwd(), answer)))
-            return `A folder named ${params.name} already exists. Please move or rename that folder to continue.`
+            return `A folder named ${answer} already exists. Please move or rename that folder to continue.`
+
           return true
         },
       },
