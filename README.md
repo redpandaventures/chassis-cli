@@ -49,9 +49,6 @@ OPTIONS
   -n, --name=name                        Name of this project
   -p, --php=5.3|5.4|5.5|5.6|7.0|7.1|7.2  PHP version
   -s, --skipVagrant                      Skip provisioning vagrant box
-
-EXAMPLE
-  $ chassis create
 ```
 
 _See code: [src/commands/create.ts](https://github.com/dinhtungdu/chassis-cli/blob/master/src/commands/create.ts)_
