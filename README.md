@@ -29,28 +29,32 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`chassis hello [FILE]`](#chassis-hello-file)
+* [`chassis create [FILE]`](#chassis-create)
 * [`chassis help [COMMAND]`](#chassis-help-command)
 
-## `chassis hello [FILE]`
+## `chassis create`
 
-describe the command here
+Create a new chassis project.
 
 ```
 USAGE
-  $ chassis hello [FILE]
+  $ chassis create
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -D, --default                          Create new Chassis project with default settings
+  -d, --domain=domain                    Domain for this project
+  -e, --extensions=extensions            Chassis extensions. This flag can be used multiple times.
+  -h, --help                             show CLI help
+  -m, --multisite=No|Yes|subdomains      Config multisite
+  -n, --name=name                        Name of this project
+  -p, --php=5.3|5.4|5.5|5.6|7.0|7.1|7.2  PHP version
+  -s, --skipVagrant                      Skip provisioning vagrant box
 
 EXAMPLE
-  $ chassis hello
-  hello world from ./src/hello.ts!
+  $ chassis create
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/dinhtungdu/chassis-cli/blob/v1.0.0/src/commands/hello.ts)_
+_See code: [src/commands/create.ts](https://github.com/dinhtungdu/chassis-cli/blob/master/src/commands/create.ts)_
 
 ## `chassis help [COMMAND]`
 
@@ -66,6 +70,4 @@ ARGUMENTS
 OPTIONS
   --all  see all commands in CLI
 ```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
 <!-- commandsstop -->
