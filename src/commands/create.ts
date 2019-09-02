@@ -1,6 +1,6 @@
 import {flags} from '@oclif/command'
 import ejs from 'ejs'
-import execa from 'execa'
+import execao from 'execa-output'
 import fs from 'fs'
 import inquirer from 'inquirer'
 import Listr from 'listr'
@@ -97,12 +97,12 @@ export default class Create extends Base {
         enabled: () => !!flags.name,
         task: () => {
           if (fs.existsSync(projectPath))
-            throw new Error(`A folder named ${params.name} already exists. Please move or rename that folder to continue.`)
+            throw new Error(`A folder named ${params.name} already exists. Please move or rename that folder then try again.`)
         }
       },
       {
         title: 'Clone chassis from Github',
-        task: () => execa(
+        task: () => execao(
           'git',
           ['clone', 'https://github.com/Chassis/Chassis', params.name, '--depth', '1']
         )
@@ -123,7 +123,7 @@ export default class Create extends Base {
       {
         title: 'Boot up the vagrant box',
         enabled: () => !flags.skipVagrant,
-        task: () => execa('vagrant', ['up'], {cwd: projectPath})
+        task: () => execao('vagrant', ['up'], {cwd: projectPath})
       },
     ])
 
