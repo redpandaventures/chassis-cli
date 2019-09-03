@@ -1,12 +1,12 @@
 export const defaults = {
   name: 'chassis',
   domain: 'chassis.local',
-  php: '7.2',
+  php: '7.3',
   multisite: 'No',
-  extensions: ['chassis/Xdebug', 'chassis/phpcs', 'chassis/phpini', 'chassis/yarn', 'chassis/MariaDB', 'chassis/nodejs', 'chassis/Composer', 'chassis/Tester'],
+  extensions: ['chassis/Xdebug', 'chassis/phpcs', 'chassis/phpini', 'chassis/yarn', 'chassis/nodejs', 'chassis/Composer', 'chassis/Tester'],
 }
 
-export const php: string[] = ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1', '7.2']
+export const php: string[] = ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4']
 
 export const multisite: {name: string, value: string}[] = [
   {name: 'No.', value: 'No'},
@@ -32,10 +32,6 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
     value: 'chassis/yarn',
     checked: true,
   }, {
-    name: 'MariaDB',
-    value: 'chassis/MariaDB',
-    checked: true,
-  }, {
     name: 'nodejs',
     value: 'chassis/nodejs',
     checked: true,
@@ -50,7 +46,7 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
   }, {
     name: 'Tester',
     value: 'chassis/Tester',
-    checked: true,
+    checked: false,
   }, {
     name: 'MailHog',
     value: 'chassis/MailHog',
