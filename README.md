@@ -3,10 +3,6 @@ chassis-cli
 
 Command line interface for Chassis
 
-[![Version](https://img.shields.io/npm/v/chassis-cli.svg)](https://npmjs.org/package/chassis-cli)
-[![Codecov](https://codecov.io/gh/dinhtungdu/chassis-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/dinhtungdu/chassis-cli)
-[![Downloads/week](https://img.shields.io/npm/dw/chassis-cli.svg)](https://npmjs.org/package/chassis-cli)
-
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
