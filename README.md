@@ -3,11 +3,9 @@ chassis-cli
 
 Command line interface for Chassis
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/chassis-cli.svg)](https://npmjs.org/package/chassis-cli)
 [![Codecov](https://codecov.io/gh/dinhtungdu/chassis-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/dinhtungdu/chassis-cli)
 [![Downloads/week](https://img.shields.io/npm/dw/chassis-cli.svg)](https://npmjs.org/package/chassis-cli)
-[![License](https://img.shields.io/npm/l/chassis-cli.svg)](https://github.com/dinhtungdu/chassis-cli/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
