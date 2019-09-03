@@ -26,7 +26,7 @@ export default class Create extends Base {
     multisite: flags.string({char: 'm', description: 'Config multisite', options: configs.multisite.map(option => option.value)}),
     extensions: flags.string({multiple: true, char: 'e', description: 'Chassis extensions. This flag can be used multiple times.'}),
     default: flags.boolean({char: 'D', description: 'Create new Chassis project with default settings'}),
-    skipVagrant: flags.boolean({char: 's', description: 'Skip provisioning vagrant box'}),
+    skipVagrant: flags.boolean({char: 's', description: 'Skip provisioning'}),
   }
 
   async run() {
@@ -91,7 +91,7 @@ export default class Create extends Base {
 
     const params = {...configs.defaults, ...responses, ...flags}
     const projectPath = path.resolve(process.cwd(), params.name)
-    const cachePath = path.resolve(homedir(), '.chassis/Chassis')
+    const cachePath = path.resolve(homedir(), '.chassis/cache/Chassis')
 
     const tasks = new Listr([
       {
@@ -103,7 +103,7 @@ export default class Create extends Base {
         }
       },
       {
-        title: 'Download Chassis',
+        title: 'Prepare Chassis',
         task: () => new Listr([
           {
             title: 'Check if cache presents',
@@ -114,7 +114,7 @@ export default class Create extends Base {
             }
           },
           {
-            title: 'Check cache status',
+            title: 'Validate cache',
             enabled: ctx => !!ctx.cached,
             task: ctx => execa(
               'git',
@@ -126,8 +126,9 @@ export default class Create extends Base {
             })
           },
           {
-            title: 'Check cache version',
+            title: 'Check for update',
             enabled: ctx => !!ctx.cached,
+            skip: ctx => !!ctx.rebuild,
             task: ctx => execa(
               'git',
               ['rev-list', '--count', '--left-only', '@{u}...HEAD'],
@@ -173,12 +174,12 @@ export default class Create extends Base {
         )
       },
       {
-        title: 'Boot up the vagrant box',
+        title: 'Configure the new Chassis project',
         enabled: () => !flags.skipVagrant,
         task: () => execa('vagrant', ['up'], {cwd: projectPath})
       },
       {
-        title: 'Your Chassis box is ready!',
+        title: 'Completed!',
         enabled: () => !flags.skipVagrant,
         task: () => notifier.notify({
           title: 'Your new Chassis project is ready!',
