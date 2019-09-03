@@ -1,6 +1,6 @@
 export const defaults = {
   name: 'chassis',
-  domain: '',
+  domain: 'chassis.local',
   php: '7.2',
   multisite: 'No',
   extensions: ['chassis/Xdebug', 'chassis/phpcs', 'chassis/phpini', 'chassis/yarn', 'chassis/MariaDB', 'chassis/nodejs', 'chassis/Composer', 'chassis/Tester'],

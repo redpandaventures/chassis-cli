@@ -1,10 +1,11 @@
 import {flags} from '@oclif/command'
 import ejs from 'ejs'
-import execao from 'execa-output'
-import fs from 'fs'
+import execa from 'execa'
+import fs from 'fs-extra'
 import inquirer from 'inquirer'
 import Listr from 'listr'
 import notifier from 'node-notifier'
+import {homedir} from 'os'
 import path from 'path'
 
 import * as configs from '../configs'
@@ -90,6 +91,7 @@ export default class Create extends Base {
 
     const params = {...configs.defaults, ...responses, ...flags}
     const projectPath = path.resolve(process.cwd(), params.name)
+    const cachePath = path.resolve(homedir(), '.chassis/Chassis')
 
     const tasks = new Listr([
       {
@@ -101,11 +103,61 @@ export default class Create extends Base {
         }
       },
       {
-        title: 'Clone chassis from Github',
-        task: () => execao(
-          'git',
-          ['clone', 'https://github.com/Chassis/Chassis', params.name, '--depth', '1']
-        )
+        title: 'Download Chassis',
+        task: () => new Listr([
+          {
+            title: 'Check if cache presents',
+            task: ctx => {
+              if (fs.existsSync(cachePath))
+                ctx.cached = true
+              return 'Not found'
+            }
+          },
+          {
+            title: 'Check cache status',
+            enabled: ctx => !!ctx.cached,
+            task: ctx => execa(
+              'git',
+              ['status', '--porcelain'],
+              {cwd: cachePath}
+            ).then(result => {
+              if (result.stdout !== '')
+                ctx.rebuild = true
+            })
+          },
+          {
+            title: 'Check cache version',
+            enabled: ctx => !!ctx.cached,
+            task: ctx => execa(
+              'git',
+              ['rev-list', '--count', '--left-only', '@{u}...HEAD'],
+              {cwd: cachePath}
+            ).then(result => {
+              if (result.stdout !== '0')
+                ctx.rebuild = true
+            })
+          },
+          {
+            title: 'Remove the old version',
+            enabled: ctx => !!ctx.rebuild,
+            task: () => fs.remove(cachePath)
+          },
+          {
+            title: 'Clone Chassis from Github',
+            enabled: ctx => !!ctx.rebuild || !ctx.cached,
+            task: () => execa(
+              'git',
+              ['clone', 'https://github.com/Chassis/Chassis', cachePath, '--depth', '1']
+            )
+          },
+          {
+            title: 'Copy Chassis files',
+            task: () => fs.copy(
+              cachePath,
+              projectPath
+            )
+          },
+        ])
       },
       {
         title: 'Create config file',
@@ -123,7 +175,7 @@ export default class Create extends Base {
       {
         title: 'Boot up the vagrant box',
         enabled: () => !flags.skipVagrant,
-        task: () => execao('vagrant', ['up'], {cwd: projectPath})
+        task: () => execa('vagrant', ['up'], {cwd: projectPath})
       },
     ])
 
