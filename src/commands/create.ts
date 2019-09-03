@@ -177,18 +177,23 @@ export default class Create extends Base {
         enabled: () => !flags.skipVagrant,
         task: () => execa('vagrant', ['up'], {cwd: projectPath})
       },
+      {
+        title: 'Your Chassis box is ready!',
+        enabled: () => !flags.skipVagrant,
+        task: () => notifier.notify({
+          title: 'Your new Chassis project is ready!',
+          message: 'Click to open it in the browser.',
+          sound: true,
+          actions: 'Dismiss',
+          open: `http://${params.domain}`
+        })
+      },
     ])
 
     this.log(`Create new Chassis project at ${projectPath}`)
 
-    await tasks.run().catch(err => {
+    tasks.run().catch(err => {
       this.error(err.message)
-    })
-
-    notifier.notify({
-      title: 'Your new Chassis project is ready!',
-      message: 'Click to open it in the browser.',
-      sound: true,
     })
   }
 }
