@@ -12,7 +12,7 @@ import * as configs from '../configs'
 import Base from '../lib/base'
 
 export default class Create extends Base {
-  static description = 'Create new chassis project'
+  static description = 'Create a new Chassis project.'
 
   static examples = [
     '$ chassis create ',
