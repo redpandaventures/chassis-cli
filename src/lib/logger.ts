@@ -46,9 +46,11 @@ export default class Logger {
   }
 
   add(data: string) {
+    const now = (new Date()).toUTCString()
+
     fs.appendFile(
       this.logFilePath,
-      data,
+      `\n[${now}]\n${data}\n`,
       {flag: 'a'},
       err => {
         if (err)
