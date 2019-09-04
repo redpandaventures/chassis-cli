@@ -58,4 +58,8 @@ export default class Logger {
       }
     )
   }
+
+  stream() {
+    return fs.createWriteStream(this.logFilePath)
+  }
 }
