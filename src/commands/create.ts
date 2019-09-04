@@ -7,9 +7,11 @@ import Listr from 'listr'
 import notifier from 'node-notifier'
 import {homedir} from 'os'
 import path from 'path'
+import split from 'split'
 
 import * as configs from '../configs'
 import Base from '../lib/base'
+import Logger from '../lib/logger'
 
 export default class Create extends Base {
   static description = 'Create a new Chassis project.'
@@ -90,16 +92,24 @@ export default class Create extends Base {
     ])
 
     const params = {...configs.defaults, ...responses, ...flags}
+    const logger = new Logger(params.domain)
     const projectPath = path.resolve(process.cwd(), params.name)
     const cachePath = path.resolve(homedir(), '.chassis/cache/Chassis')
+
+    logger.add(
+      `\nBegin creating new Chassis project with params: ${JSON.stringify(params)}`
+    )
 
     const tasks = new Listr([
       {
         title: 'Check if folder exists',
         enabled: () => !!flags.name,
         task: () => {
-          if (fs.existsSync(projectPath))
-            throw new Error(`A folder named ${params.name} already exists. Please move or rename that folder then try again.`)
+          if (fs.existsSync(projectPath)) {
+            let message = `A folder named ${params.name} already exists. Please move or rename that folder then try again.`
+            logger.add(message)
+            throw new Error(message)
+          }
         }
       },
       {
@@ -108,9 +118,12 @@ export default class Create extends Base {
           {
             title: 'Check if cache presents',
             task: ctx => {
-              if (fs.existsSync(cachePath))
+              if (fs.existsSync(cachePath)) {
                 ctx.cached = true
-              return 'Not found'
+                logger.add('Cache found')
+              } else {
+                logger.add('Cache not found')
+              }
             }
           },
           {
@@ -121,8 +134,10 @@ export default class Create extends Base {
               ['status', '--porcelain'],
               {cwd: cachePath}
             ).then(result => {
-              if (result.stdout !== '')
+              if (result.stdout !== '') {
+                logger.add('Cache is invalid. Rebuid cache.')
                 ctx.rebuild = true
+              }
             })
           },
           {
@@ -134,22 +149,26 @@ export default class Create extends Base {
               ['rev-list', '--count', '--left-only', '@{u}...HEAD'],
               {cwd: cachePath}
             ).then(result => {
-              if (result.stdout !== '0')
+              if (result.stdout !== '0') {
+                logger.add('Update is available. Rebuid cache.')
                 ctx.rebuild = true
+              }
             })
           },
           {
             title: 'Remove the old version',
             enabled: ctx => !!ctx.rebuild,
             task: () => fs.remove(cachePath)
+              .then(() => logger.add('Deleted invalid cache.'))
           },
           {
             title: 'Clone Chassis from Github',
             enabled: ctx => !!ctx.rebuild || !ctx.cached,
             task: () => execa(
               'git',
-              ['clone', 'https://github.com/Chassis/Chassis', cachePath, '--depth', '1']
-            )
+              ['clone', 'https://github.com/Chassis/Chassis', cachePath, '--depth', '1'],
+              {all: true}
+            ).all.pipe(split(/\r?\n/, null, {trailing: false}))
           },
           {
             title: 'Copy Chassis files',
@@ -176,18 +195,26 @@ export default class Create extends Base {
       {
         title: 'Configure the new Chassis project',
         enabled: () => !flags.skipVagrant,
-        task: () => execa('vagrant', ['up'], {cwd: projectPath})
+        task: () => {
+          logger.add('Begin provisioning your new Chassis project.')
+          const subprocess = execa('vagrant', ['up'], {cwd: projectPath, all: true})
+          subprocess.all.pipe(logger.stream())
+          return subprocess.all.pipe(split(/\r?\n/, null, {trailing: false}))
+        }
       },
       {
-        title: 'Completed!',
+        title: 'Done!',
         enabled: () => !flags.skipVagrant,
-        task: () => notifier.notify({
-          title: 'Your new Chassis project is ready!',
-          message: 'Click to open it in the browser.',
-          sound: true,
-          actions: 'Dismiss',
-          open: `http://${params.domain}`
-        })
+        task: () => {
+          logger.add('Provisioning completed!')
+          notifier.notify({
+            title: 'Your new Chassis project is ready!',
+            message: 'Click to open it in the browser.',
+            sound: true,
+            actions: 'Dismiss',
+            open: `http://${params.domain}`
+          })
+        }
       },
     ])
 
