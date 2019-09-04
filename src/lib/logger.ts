@@ -20,11 +20,18 @@ export default class Logger {
 
   getLogFilePath() {
     const dateNow = this.getFormattedDate(new Date())
-    return path.resolve(homedir(), `.chassis/logs/${this.domain}-${dateNow}.log`)
+    return path.resolve(
+      homedir(),
+      `.chassis/logs/${this.domain}-${dateNow}.log`
+    )
   }
 
   getFormattedDate(date: Date) {
-    return date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')
+    return date.getFullYear()
+      + '-'
+      + (date.getMonth() + 1).toString().padStart(2, '0')
+      + '-'
+      + date.getDate().toString().padStart(2, '0')
   }
 
   maybeCreateLogFolder() {
