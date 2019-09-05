@@ -3,7 +3,7 @@ export const defaults = {
   domain: 'chassis.local',
   php: '7.3',
   multisite: 'No',
-  extensions: ['chassis/phpini', 'chassis/yarn', 'chassis/nodejs', 'chassis/Composer'],
+  extensions: []
 }
 
 export const php: string[] = ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4']
@@ -26,15 +26,15 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
   }, {
     name: 'phpini',
     value: 'chassis/phpini',
-    checked: true,
+    checked: false,
   }, {
     name: 'yarn',
     value: 'chassis/yarn',
-    checked: true,
+    checked: false,
   }, {
     name: 'nodejs',
     value: 'chassis/nodejs',
-    checked: true,
+    checked: false,
   }, {
     name: 'Fish',
     value: 'chassis/Fish',
@@ -42,7 +42,7 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
   }, {
     name: 'Composer',
     value: 'chassis/Composer',
-    checked: true,
+    checked: false,
   }, {
     name: 'Tester',
     value: 'chassis/Tester',
