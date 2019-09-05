@@ -97,7 +97,7 @@ export default class Create extends Base {
     const cachePath = path.resolve(homedir(), '.chassis/cache/Chassis')
 
     logger.add(
-      `\nBegin creating new Chassis project with params: ${JSON.stringify(params)}`
+      `Begin creating new Chassis project with params: ${JSON.stringify(params)}`
     )
 
     const tasks = new Listr([
@@ -164,11 +164,14 @@ export default class Create extends Base {
           {
             title: 'Clone Chassis from Github',
             enabled: ctx => !!ctx.rebuild || !ctx.cached,
-            task: () => execa(
-              'git',
-              ['clone', 'https://github.com/Chassis/Chassis', cachePath, '--depth', '1'],
-              {all: true}
-            ).all.pipe(split(/\r?\n/, null, {trailing: false}))
+            task: () => {
+              const subprocess = execa(
+                'git',
+                ['clone', 'https://github.com/Chassis/Chassis', cachePath, '--depth', '1']
+              )
+              if (subprocess.all)
+                return subprocess!.all.pipe(split(/\r?\n/, null))
+            }
           },
           {
             title: 'Copy Chassis files',
@@ -193,25 +196,26 @@ export default class Create extends Base {
         )
       },
       {
-        title: 'Configure the new Chassis project',
+        title: 'Provision the new Chassis project',
         enabled: () => !flags.skipVagrant,
         task: () => {
           logger.add('Begin provisioning your new Chassis project.')
-          const subprocess = execa('vagrant', ['up'], {cwd: projectPath, all: true})
-          subprocess.all.pipe(logger.stream())
-          return subprocess.all.pipe(split(/\r?\n/, null, {trailing: false}))
+          const subprocess = execa('vagrant', ['up'], {cwd: projectPath})
+          if (subprocess.all) {
+            subprocess.all.pipe(logger.stream())
+            return subprocess.all.pipe(split(/\r?\n/, null))
+          }
         }
       },
       {
-        title: 'Done!',
+        title: `Done @ ${params.domain}`,
         enabled: () => !flags.skipVagrant,
         task: () => {
           logger.add('Provisioning completed!')
           notifier.notify({
-            title: 'Your new Chassis project is ready!',
+            title: 'Provisioning completed!',
             message: 'Click to open it in the browser.',
             sound: true,
-            actions: 'Dismiss',
             open: `http://${params.domain}`
           })
         }

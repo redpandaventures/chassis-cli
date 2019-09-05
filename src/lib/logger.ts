@@ -35,14 +35,8 @@ export default class Logger {
   }
 
   maybeCreateLogFolder() {
-    fs.mkdir(
-      path.resolve(homedir(), '.chassis/logs/'),
-      {recursive: true},
-      (err: any) => {
-        if (err)
-          this.log("Can't create log folder")
-      }
-    )
+    fs.ensureDir(path.resolve(homedir(), '.chassis/logs/'))
+      .catch(err => this.log(err.message))
   }
 
   add(data: string) {
@@ -60,6 +54,6 @@ export default class Logger {
   }
 
   stream() {
-    return fs.createWriteStream(this.logFilePath)
+    return fs.createWriteStream(this.logFilePath, {flags: 'a'})
   }
 }
