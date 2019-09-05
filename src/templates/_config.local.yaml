@@ -1,6 +1,8 @@
 hosts:
     - <%= domain %>
 
+machine_name: <%= domain %>
+
 # No multisite.
 multisite: <%= multisite %>
 
