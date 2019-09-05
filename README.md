@@ -78,8 +78,8 @@ OPTIONS
 
 # Development
 <!-- development -->
-1. Clone this repository.
-2. Install dependencies: `yarn install`.
+1. Clone it `git clone https://github.com/redpandaventures/chassis-cli.git`.
+2. Install it: `yarn install`.
 3. Link it: `npm link`.
 4. Run it: `chassis`
 <!-- developmentstop -->
