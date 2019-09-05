@@ -10,7 +10,6 @@ Command line interface for Chassis
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g chassis-cli
 $ chassis COMMAND
 running command...
 $ chassis (-v|--version|version)
