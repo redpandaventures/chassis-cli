@@ -1,5 +1,6 @@
 import * as Config from '@oclif/config'
 import Help from '@oclif/plugin-help'
+import inquirer from 'inquirer'
 
 import Base from './lib/base'
 
@@ -25,7 +26,26 @@ class Chassis extends Base {
       return this.config.runCommand(id, argv)
     }
 
-    this.log('Hello from Chassis')
+    let responses: any = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'command',
+        message: 'What can Chassis do for you?',
+        choices: [
+          {name: 'Create a new project (In current directory).', value: 'create'},
+          //{name: 'Manage global extensions.', value: 'manage_extensions'},
+          //{name: 'View logs', value: 'view_logs'},
+          {name: 'Exit', value: 'exit'},
+        ],
+      }
+    ])
+
+    if (responses.command === 'exit') {
+      this.log('Have a great day!')
+      this.exit(0)
+    }
+
+    return this.config.runCommand(responses.command)
   }
 
   protected _helpOverride(): boolean {
