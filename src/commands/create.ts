@@ -144,6 +144,16 @@ export default class Create extends Base {
             title: 'Check for update',
             enabled: ctx => !!ctx.cached,
             skip: ctx => !!ctx.rebuild,
+            task: () => execa(
+              'git',
+              ['fetch'],
+              {cwd: cachePath}
+            )
+          },
+          {
+            title: 'Compare version',
+            enabled: ctx => !!ctx.cached,
+            skip: ctx => !!ctx.rebuild,
             task: ctx => execa(
               'git',
               ['rev-list', '--count', '--left-only', '@{u}...HEAD'],
