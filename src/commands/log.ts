@@ -6,7 +6,7 @@ import {homedir} from 'os'
 import Base from '../lib/base'
 
 export default class Log extends Base {
-  static description = 'Create a new Chassis project.'
+  static description = 'View chassis logs'
 
   static examples = [
     '$ chassis log ',
