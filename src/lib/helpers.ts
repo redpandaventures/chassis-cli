@@ -13,10 +13,19 @@ export async function isChassisDir() {
 export function getLocalConfig(key = ''): any {
   try {
     const localConfig = yaml.safeLoad(fs.readFileSync('config.local.yaml', 'utf8'))
-    if (key !== '' && key in localConfig)
+    if (!key)
+      return localConfig
+
+    if (key in localConfig)
       return localConfig[key]
-    return localConfig
+
+    return []
   } catch (e) {// tslint:disable-line
-    return false
+    return []
   }
+}
+
+export async function updateLocalConfig(data: {[key: string]: any}) {
+  const mergedData = Object.assign(getLocalConfig(), data)
+  return fs.writeFile('config.local.yaml', yaml.safeDump(mergedData))
 }
