@@ -84,16 +84,12 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
     value: 'chassis/memcache',
     checked: false,
   }, {
-    name: 'db-backup',
-    value: 'chassis/db-backup',
+    name: 'db_backup',
+    value: 'chassis/db_backup',
     checked: false,
   }, {
-    name: 'local-dev',
-    value: 'chassis/local-dev',
-    checked: false,
-  }, {
-    name: 'VIP-Classic',
-    value: 'stuartshields/chassis-vip-classic',
+    name: 'local_dev',
+    value: 'chassis/local_dev',
     checked: false,
   }
 ]
