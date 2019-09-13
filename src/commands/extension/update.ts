@@ -32,7 +32,7 @@ export default class Update extends Base {
     await toUpdateExtensions.map((extension: string) => {
       let [extensionName] = extension.split('/').slice(-1)
       spawn('git', ['pull'], {
-        cwd: `${extensionDir}/${extensionName}`,
+        cwd: `${extensionDir}/${extensionName.replace('.git', '')}`,
         stdio: 'inherit'
       })
     })
