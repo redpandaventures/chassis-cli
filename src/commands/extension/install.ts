@@ -1,4 +1,4 @@
-import execa from 'execa'
+import {spawn} from 'child_process'
 import inquirer from 'inquirer'
 
 import * as configs from '../../configs'
@@ -34,8 +34,6 @@ export default class Install extends Base {
       extensions: enabledExtensions.concat(toInstallExtensions)
     })
 
-    let subprocess = execa('vagrant', ['reload', '--provision'])
-    subprocess.stdout.pipe(process.stdout)
-    subprocess.stderr.pipe(process.stderr)
+    spawn('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
   }
 }
