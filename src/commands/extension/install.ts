@@ -21,17 +21,42 @@ export default class Install extends Base {
       return !enabledExtensions.includes(item.value)
     })
 
-    let {toInstallExtensions} = await inquirer.prompt([
+    let responses = await inquirer.prompt([
       {
-        name: 'toInstallextensions',
+        name: 'type',
+        message: 'Choose extension type',
+        type: 'list',
+        choices: ['Official', 'Custom']
+      },
+      {
+        name: 'extension',
+        message: 'Extension name or URL',
+        when: ({type}) => type === 'Custom',
+      },
+      {
+        name: 'extensions',
         message: 'Choose extensions to install',
         type: 'checkbox',
         choices: remainingExtensions,
+        when: ({type}) => type === 'Official',
       },
     ])
 
+    let newExtensions = []
+
+    if (responses.type === 'Custom' && responses.extension) {
+      newExtensions = [responses.extension]
+    }
+
+    if (responses.type === 'Official' && responses.extensions.length > 0) {
+      newExtensions = responses.extensions
+    }
+
+    if (newExtensions.length === 0)
+      this.error('Nothing to do! Please choose extensions to install')
+
     await helpers.updateLocalConfig({
-      extensions: enabledExtensions.concat(toInstallExtensions)
+      extensions: enabledExtensions.concat(newExtensions)
     })
 
     spawn('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
