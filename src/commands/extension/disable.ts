@@ -17,6 +17,9 @@ export default class Disable extends Base {
 
     const enabledExtensions = helpers.getLocalConfig('extensions') || []
 
+    if (enabledExtensions.length === 0)
+      this.error("Nothing to do! You don't have any extension.")
+
     let {extensions} = await inquirer.prompt([
       {
         name: 'toDisableExtensions',
