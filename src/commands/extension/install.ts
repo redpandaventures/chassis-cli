@@ -6,7 +6,7 @@ import Base from '../../lib/base'
 import * as helpers from '../../lib/helpers'
 
 export default class Extension extends Base {
-  static description = 'Manage Chassis extensions'
+  static description = 'Install Chassis extensions'
 
   static examples = [
     '$ chassis extension:install',
@@ -21,7 +21,7 @@ export default class Extension extends Base {
       return !enabledExtensions.includes(item.value)
     })
 
-    let {toInstallextensions} = await inquirer.prompt([
+    let {toInstallExtensions} = await inquirer.prompt([
       {
         name: 'toInstallextensions',
         message: 'Choose extensions to install',
@@ -31,7 +31,7 @@ export default class Extension extends Base {
     ])
 
     await helpers.updateLocalConfig({
-      extensions: enabledExtensions.concat(toInstallextensions)
+      extensions: enabledExtensions.concat(toInstallExtensions)
     })
 
     let subprocess = execa('vagrant', ['reload', '--provision'])

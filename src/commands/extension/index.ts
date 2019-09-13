@@ -21,7 +21,7 @@ export default class Extension extends Base {
         type: 'list',
         choices: [
           {name: 'Install extension(s)', value: 'install'},
-          //{name: 'Update extension(s)', value: 'update'},
+          {name: 'Update extensions', value: 'update'},
           //{name: 'Uninstall extension(s)', value: 'uninstall'},
         ],
       },
