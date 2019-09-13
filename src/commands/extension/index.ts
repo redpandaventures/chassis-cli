@@ -22,6 +22,7 @@ export default class Extension extends Base {
         choices: [
           {name: 'Install extension(s)', value: 'install'},
           {name: 'Update extension(s)', value: 'update'},
+          {name: 'Enable extension(s)', value: 'enable'},
           {name: 'Disable extension(s)', value: 'disable'},
         ],
       },
