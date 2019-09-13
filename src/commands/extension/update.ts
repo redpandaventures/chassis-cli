@@ -1,4 +1,4 @@
-import {spawnSync} from 'child_process'
+import {spawn} from 'child_process'
 import inquirer from 'inquirer'
 
 import Base from '../../lib/base'
@@ -27,15 +27,16 @@ export default class Update extends Base {
       },
     ])
 
-    toUpdateExtensions.map((extension: string) => {
+    this.log('Updating selected extensions..')
+
+    await toUpdateExtensions.map((extension: string) => {
       let [extensionName] = extension.split('/').slice(-1)
-      this.log(`Updating ${extension}`)
-      spawnSync('git', ['pull'], {
+      spawn('git', ['pull'], {
         cwd: `${extensionDir}/${extensionName}`,
         stdio: 'inherit'
       })
     })
 
-    spawnSync('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
+    spawn('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
   }
 }
