@@ -5,7 +5,7 @@ import * as configs from '../../configs'
 import Base from '../../lib/base'
 import * as helpers from '../../lib/helpers'
 
-export default class Extension extends Base {
+export default class Install extends Base {
   static description = 'Install Chassis extensions'
 
   static examples = [
