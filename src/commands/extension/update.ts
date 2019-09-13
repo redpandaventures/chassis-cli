@@ -27,7 +27,7 @@ export default class Update extends Base {
       },
     ])
 
-    void toUpdateExtensions.map((extension: string) => {
+    toUpdateExtensions.map((extension: string) => {
       let [extensionName] = extension.split('/').slice(-1)
       this.log(`Updating ${extension}`)
       spawnSync('git', ['pull'], {
@@ -35,5 +35,7 @@ export default class Update extends Base {
         stdio: 'inherit'
       })
     })
+
+    spawnSync('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
   }
 }
