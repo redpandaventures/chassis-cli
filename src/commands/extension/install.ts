@@ -53,7 +53,7 @@ export default class Install extends Base {
     }
 
     if (newExtensions.length === 0)
-      this.error('Nothing to do! Please choose extensions to install')
+      this.error('Nothing to do! Please choose at least one extension.')
 
     await helpers.updateLocalConfig({
       extensions: enabledExtensions.concat(newExtensions)

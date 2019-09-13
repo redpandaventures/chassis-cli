@@ -17,7 +17,7 @@ export default class Disable extends Base {
 
     const enabledExtensions = helpers.getLocalConfig('extensions') || []
 
-    let {toDisableExtensions} = await inquirer.prompt([
+    let {extensions} = await inquirer.prompt([
       {
         name: 'toDisableExtensions',
         message: 'Choose extensions to disable',
@@ -26,10 +26,13 @@ export default class Disable extends Base {
       },
     ])
 
+    if (extensions.length === 0)
+      this.error('Nothing to do! Please choose at least one extension.')
+
     this.log('Disabling selected extensions..')
 
     await helpers.updateLocalConfig({
-      disabled_extensions: toDisableExtensions
+      disabled_extensions: extensions
     })
 
     spawn('vagrant', ['reload', '--provision'], {stdio: 'inherit'})

@@ -18,7 +18,7 @@ export default class Update extends Base {
     const extensionDir = `${process.cwd()}/extensions`
     const enabledExtensions = helpers.getLocalConfig('extensions') || []
 
-    let {toUpdateExtensions} = await inquirer.prompt([
+    let {extensions} = await inquirer.prompt([
       {
         name: 'toUpdateExtensions',
         message: 'Choose extensions to update',
@@ -27,9 +27,12 @@ export default class Update extends Base {
       },
     ])
 
+    if (extensions.length === 0)
+      this.error('Nothing to do! Please choose at least one extension.')
+
     this.log('Updating selected extensions..')
 
-    await toUpdateExtensions.map((extension: string) => {
+    await extensions.map((extension: string) => {
       let [extensionName] = extension.split('/').slice(-1)
       spawn('git', ['pull'], {
         cwd: `${extensionDir}/${extensionName.replace('.git', '')}`,
