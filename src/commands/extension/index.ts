@@ -11,20 +11,24 @@ export default class Extension extends Base {
   ]
 
   async run() {
-    if (! await isChassisDir())
-      this.error('Please run this command again in a Chassis directory.')
+    const isGlobal = ! await isChassisDir()
+
+    let choices = [
+      {name: 'Install extension(s)', value: 'install'},
+      {name: 'Update extension(s)', value: 'update'},
+      {name: 'Enable extension(s)', value: 'enable'},
+      {name: 'Disable extension(s)', value: 'disable'},
+    ]
+
+    if (isGlobal)
+      choices = [{name: 'Install global extension(s)', value: 'install'}]
 
     let {action} = await inquirer.prompt([
       {
         name: 'action',
         message: 'What can Chassis do for you?',
         type: 'list',
-        choices: [
-          {name: 'Install extension(s)', value: 'install'},
-          {name: 'Update extension(s)', value: 'update'},
-          {name: 'Enable extension(s)', value: 'enable'},
-          {name: 'Disable extension(s)', value: 'disable'},
-        ],
+        choices,
       },
     ])
 

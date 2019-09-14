@@ -1,5 +1,8 @@
 import {spawn} from 'child_process'
+import fs from 'fs-extra'
 import inquirer from 'inquirer'
+import {homedir} from 'os'
+import path from 'path'
 
 import * as configs from '../../configs'
 import Base from '../../lib/base'
@@ -13,11 +16,18 @@ export default class Install extends Base {
   ]
 
   async run() {
-    if (! await helpers.isChassisDir())
-      this.error('Please run this command again in a Chassis directory.')
+    const isGlobal = ! await helpers.isChassisDir()
 
-    const enabledExtensions = helpers.getLocalConfig('extensions') || []
-    const remainingExtensions = configs.extensions.filter(item => {
+    let enabledExtensions: string[] = helpers.getLocalConfig('extensions') || []
+
+    if (isGlobal) {
+      enabledExtensions = await fs.readdir(
+        path.resolve(homedir(), '.chassis/extensions')
+      )
+    }
+
+    enabledExtensions = enabledExtensions.map(item => item.toLowerCase())
+    let remainingExtensions = configs.extensions.filter(item => {
       return !enabledExtensions.includes(item.value)
     })
 
@@ -42,7 +52,7 @@ export default class Install extends Base {
       },
     ])
 
-    let newExtensions = []
+    let newExtensions: string[] = []
 
     if (responses.type === 'Custom' && responses.extension) {
       newExtensions = [responses.extension]
@@ -55,10 +65,22 @@ export default class Install extends Base {
     if (newExtensions.length === 0)
       this.error('Nothing to do! Please choose at least one extension.')
 
-    await helpers.updateLocalConfig({
-      extensions: enabledExtensions.concat(newExtensions)
-    })
+    newExtensions = newExtensions.map(name => name.toLowerCase())
 
-    spawn('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
+    if (isGlobal) {
+      this.log('Installing selected extensions globally..')
+      newExtensions.map((repo: string) => {
+        spawn('git', ['clone', helpers.getExtensionURL(repo)], {
+          cwd: path.resolve(homedir(), '.chassis/extensions'),
+          stdio: 'inherit'
+        })
+      })
+    } else {
+      await helpers.updateLocalConfig({
+        extensions: enabledExtensions.concat(newExtensions)
+      })
+
+      spawn('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
+    }
   }
 }
