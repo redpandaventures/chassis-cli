@@ -15,13 +15,17 @@ export default class Extension extends Base {
 
     let choices = [
       {name: 'Install extension(s)', value: 'install'},
+      {name: 'List installed extension(s)', value: 'list'},
       {name: 'Update extension(s)', value: 'update'},
       {name: 'Enable extension(s)', value: 'enable'},
       {name: 'Disable extension(s)', value: 'disable'},
     ]
 
     if (isGlobal)
-      choices = [{name: 'Install global extension(s)', value: 'install'}]
+      choices = [
+        {name: 'Install global extension(s)', value: 'install'},
+        {name: 'List installed global extension(s)', value: 'list'},
+      ]
 
     let {action} = await inquirer.prompt([
       {
