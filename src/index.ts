@@ -34,8 +34,8 @@ class Chassis extends Base {
         choices: [
           {name: 'Create a new project (In current directory).', value: 'create'},
           {name: 'Manage extensions.', value: 'extension'},
-          {name: 'View logs', value: 'log'},
-          {name: 'Exit', value: 'exit'},
+          {name: 'View logs.', value: 'log'},
+          {name: 'Exit.', value: 'exit'},
         ],
       }
     ])
