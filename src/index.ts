@@ -33,7 +33,7 @@ class Chassis extends Base {
         message: 'What can Chassis do for you?',
         choices: [
           {name: 'Create a new project (In current directory).', value: 'create'},
-          //{name: 'Manage global extensions.', value: 'manage_extensions'},
+          {name: 'Manage extensions.', value: 'extension'},
           {name: 'View logs', value: 'log'},
           {name: 'Exit', value: 'exit'},
         ],

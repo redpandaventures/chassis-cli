@@ -17,7 +17,7 @@ export const multisite: {name: string, value: string}[] = [
 export const extensions: {name: string, value: string, checked: boolean}[] = [
   {
     name: 'Xdebug',
-    value: 'chassis/Xdebug',
+    value: 'chassis/xdebug',
     checked: false,
   }, {
     name: 'phpcs',
@@ -37,31 +37,31 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
     checked: false,
   }, {
     name: 'Fish',
-    value: 'chassis/Fish',
+    value: 'chassis/fish',
     checked: false,
   }, {
     name: 'Composer',
-    value: 'chassis/Composer',
+    value: 'chassis/composer',
     checked: false,
   }, {
     name: 'Tester',
-    value: 'chassis/Tester',
+    value: 'chassis/tester',
     checked: false,
   }, {
     name: 'MailHog',
-    value: 'chassis/MailHog',
+    value: 'chassis/mailhog',
     checked: false,
   }, {
     name: 'SequelPro',
-    value: 'chassis/SequelPro',
+    value: 'chassis/sequelpro',
     checked: false,
   }, {
     name: 'Cavalcade',
-    value: 'chassis/Cavalcade',
+    value: 'chassis/cavalcade',
     checked: false,
   }, {
     name: 'Theme Review',
-    value: 'chassis/ThemeReview',
+    value: 'chassis/themereview',
     checked: false,
   }, {
     name: 'xhprof',
@@ -69,15 +69,15 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
     checked: false,
   }, {
     name: 'Debugging',
-    value: 'chassis/Debugging',
+    value: 'chassis/debugging',
     checked: false,
   }, {
     name: 'phpMyAdmin',
-    value: 'chassis/phpMyAdmin',
+    value: 'chassis/phpmyadmin',
     checked: false,
   }, {
     name: 'Query Monitor',
-    value: 'chassis/Query_Monitor',
+    value: 'chassis/query_monitor',
     checked: false,
   }, {
     name: 'memcache',
