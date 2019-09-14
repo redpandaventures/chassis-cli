@@ -22,7 +22,7 @@ export default class Enable extends Base {
 
     let {extensions} = await inquirer.prompt([
       {
-        name: 'toDisableExtensions',
+        name: 'extensions',
         message: 'Choose extensions to enable',
         type: 'checkbox',
         choices: disabledExtensions
