@@ -29,3 +29,12 @@ export async function updateLocalConfig(data: {[key: string]: any}) {
   const mergedData = Object.assign(getLocalConfig(), data)
   return fs.writeFile('config.local.yaml', yaml.safeDump(mergedData))
 }
+
+export function getExtensionURL(repo: string) {
+  if (repo.match(/^\w+$/))
+    return `https://github.com/chassis/${repo}`
+  if (repo.match(/^\w+\/\w+$/))
+    return `https://github.com/${repo}`
+
+  return repo
+}
