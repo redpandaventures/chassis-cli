@@ -16,16 +16,17 @@ export default class Disable extends Base {
       this.error('Please run this command again in a Chassis directory.')
 
     const enabledExtensions = helpers.getLocalConfig('extensions') || []
+    const disabledExtensions = helpers.getLocalConfig('disabled_extensions') || []
 
     if (enabledExtensions.length === 0)
       this.error("Nothing to do! You don't have any extension.")
 
     let {extensions} = await inquirer.prompt([
       {
-        name: 'toDisableExtensions',
+        name: 'extensions',
         message: 'Choose extensions to disable',
         type: 'checkbox',
-        choices: enabledExtensions
+        choices: enabledExtensions.filter((e: string) => !disabledExtensions.includes(e))
       },
     ])
 
@@ -34,8 +35,11 @@ export default class Disable extends Base {
 
     this.log('Disabling selected extensions..')
 
+    const newDisabledExtensions = [...new Set(disabledExtensions.concat(extensions))]
+
     await helpers.updateLocalConfig({
-      disabled_extensions: extensions
+      disabled_extensions: newDisabledExtensions,
+      extensions: enabledExtensions.filter((e: string) => !newDisabledExtensions.includes(e))
     })
 
     spawn('vagrant', ['reload', '--provision'], {stdio: 'inherit'})
