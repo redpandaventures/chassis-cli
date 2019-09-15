@@ -3,6 +3,7 @@ import Help from '@oclif/plugin-help'
 import inquirer from 'inquirer'
 
 import Base from './lib/base'
+import {getVMStatus, isChassisDir} from './lib/helpers'
 
 class Chassis extends Base {
   static run(argv = process.argv.slice(2), options?: Config.LoadOptions) {
@@ -26,17 +27,34 @@ class Chassis extends Base {
       return this.config.runCommand(id, argv)
     }
 
+    let choices = [
+      {name: 'Create a new project (In current directory).', value: 'create'},
+      {name: 'Manage extensions.', value: 'extension'},
+      {name: 'View logs.', value: 'log'},
+      {name: 'Exit.', value: 'exit'},
+    ]
+
+    if (isChassisDir()) {
+      if (getVMStatus() === 'running') {
+        choices = [{name: 'Stop VM', value: 'stop'}]
+      } else {
+        choices = [{name: 'Start VM', value: 'start'}]
+      }
+      choices = choices.concat([
+        {name: 'Restart VM', value: 'restart'},
+        {name: 'View VM status', value: 'status'},
+        {name: 'Manage extensions.', value: 'extension'},
+        {name: 'View logs.', value: 'log'},
+        {name: 'Exit.', value: 'exit'},
+      ])
+    }
+
     let responses: any = await inquirer.prompt([
       {
         type: 'list',
         name: 'command',
         message: 'What can Chassis do for you?',
-        choices: [
-          {name: 'Create a new project (In current directory).', value: 'create'},
-          {name: 'Manage extensions.', value: 'extension'},
-          {name: 'View logs.', value: 'log'},
-          {name: 'Exit.', value: 'exit'},
-        ],
+        choices,
       }
     ])
 
