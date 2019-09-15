@@ -46,6 +46,7 @@ class Chassis extends Base {
         {name: 'Manage extensions.', value: 'extension'},
         {name: 'View logs.', value: 'log'},
         {name: 'Exit.', value: 'exit'},
+        {name: 'Destroy VM', value: 'destroy'},
       ])
     }
 
