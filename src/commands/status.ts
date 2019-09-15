@@ -1,5 +1,5 @@
 import Base from '../lib/base'
-import {getLocalConfig, getVMStatus, isChassisDir} from '../lib/helpers'
+import {getLocalConfig, getVMStatus} from '../lib/helpers'
 
 export default class Status extends Base {
   static description = 'View chassis logs'
@@ -8,10 +8,9 @@ export default class Status extends Base {
     '$ chassis status',
   ]
 
-  async run() {
-    if (! isChassisDir())
-      this.error('Please run this command again in a Chassis directory.')
+  isLocalCommand = true
 
+  async run() {
     const vmStatus = `
 === Curent VM status =====================
 Domain: ${getLocalConfig('hosts')}

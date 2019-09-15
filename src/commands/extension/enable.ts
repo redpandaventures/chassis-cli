@@ -2,7 +2,7 @@ import {spawn} from 'child_process'
 import inquirer from 'inquirer'
 
 import Base from '../../lib/base'
-import * as helpers from '../../lib/helpers'
+import {getLocalConfig, updateLocalConfig} from '../../lib/helpers'
 
 export default class Enable extends Base {
   static description = 'Enable Chassis extensions'
@@ -11,11 +11,10 @@ export default class Enable extends Base {
     '$ chassis extension:enable',
   ]
 
-  async run() {
-    if (! helpers.isChassisDir())
-      this.error('Please run this command again in a Chassis directory.')
+  isLocalCommand = true
 
-    const disabledExtensions = helpers.getLocalConfig('disabled_extensions') || []
+  async run() {
+    const disabledExtensions = getLocalConfig('disabled_extensions') || []
 
     if (disabledExtensions.length === 0)
       this.error("Nothing to do! You don't have any disabled extension.")
@@ -34,7 +33,7 @@ export default class Enable extends Base {
 
     this.log('Enabling selected extensions..')
 
-    await helpers.updateLocalConfig({
+    await updateLocalConfig({
       disabled_extensions: disabledExtensions.filter((e: string) => !extensions.includes(e))
     })
 

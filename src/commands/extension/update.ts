@@ -2,7 +2,7 @@ import {spawn} from 'child_process'
 import inquirer from 'inquirer'
 
 import Base from '../../lib/base'
-import * as helpers from '../../lib/helpers'
+import {getLocalConfig} from '../../lib/helpers'
 
 export default class Update extends Base {
   static description = 'Update Chassis extensions'
@@ -11,12 +11,11 @@ export default class Update extends Base {
     '$ chassis extension:update',
   ]
 
-  async run() {
-    if (! await helpers.isChassisDir())
-      this.error('Please run this command again in a Chassis directory.')
+  isLocalCommand = true
 
+  async run() {
     const extensionDir = `${process.cwd()}/extensions`
-    const enabledExtensions = helpers.getLocalConfig('extensions') || []
+    const enabledExtensions = getLocalConfig('extensions') || []
 
     let {extensions} = await inquirer.prompt([
       {

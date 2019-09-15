@@ -1,7 +1,6 @@
 import {spawn} from 'child_process'
 
 import Base from '../lib/base'
-import {isChassisDir} from '../lib/helpers'
 
 export default class Restart extends Base {
   static description = 'Restart current chassis VM'
@@ -10,10 +9,9 @@ export default class Restart extends Base {
     '$ chassis restart',
   ]
 
-  async run() {
-    if (! isChassisDir())
-      this.error('Please run this command again in a Chassis directory.')
+  isLocalCommand = true
 
+  async run() {
     spawn('vagrant', ['reload'], {stdio: 'inherit'})
   }
 }
