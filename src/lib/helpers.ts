@@ -1,8 +1,8 @@
 import fs from 'fs-extra'
 import yaml from 'js-yaml'
 
-export async function isChassisDir() {
-  let files = await fs.readdir(process.cwd())
+export function isChassisDir() {
+  let files = fs.readdirSync(process.cwd())
   return files.includes('Vagrantfile')
     && files.includes('content')
     && files.includes('config.yaml')
@@ -25,7 +25,7 @@ export function getLocalConfig(key = ''): any {
   }
 }
 
-export async function updateLocalConfig(data: {[key: string]: any}) {
+export function updateLocalConfig(data: {[key: string]: any}) {
   const mergedData = Object.assign(getLocalConfig(), data)
   return fs.writeFile('config.local.yaml', yaml.safeDump(mergedData))
 }

@@ -11,7 +11,7 @@ export default class Extension extends Base {
   ]
 
   async run() {
-    const isGlobal = ! await isChassisDir()
+    const isGlobal = ! isChassisDir()
 
     let choices = [
       {name: 'Install extension(s)', value: 'install'},

@@ -12,7 +12,7 @@ export default class Enable extends Base {
   ]
 
   async run() {
-    if (! await helpers.isChassisDir())
+    if (! helpers.isChassisDir())
       this.error('Please run this command again in a Chassis directory.')
 
     const disabledExtensions = helpers.getLocalConfig('disabled_extensions') || []
