@@ -1,3 +1,4 @@
+import {execSync} from 'child_process'
 import fs from 'fs-extra'
 import yaml from 'js-yaml'
 
@@ -37,4 +38,16 @@ export function getExtensionURL(repo: string) {
     return `https://github.com/${repo}`
 
   return repo
+}
+
+export function getVMStatus() {
+  if (!isChassisDir())
+    return 'none'
+
+  let [status] = execSync('vagrant status --machine-readable | grep state,')
+    .toString()
+    .split(',')
+    .slice(-1)
+
+  return status.replace(/\r?\n|\r/, '')
 }
