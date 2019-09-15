@@ -44,6 +44,7 @@ class Chassis extends Base {
         {name: 'Restart VM', value: 'restart'},
         {name: 'View VM status', value: 'status'},
         {name: 'Manage extensions.', value: 'extension'},
+        {name: 'Change PHP version.', value: 'php'},
         {name: 'View logs.', value: 'log'},
         {name: 'Exit.', value: 'exit'},
         {name: '(Re)provision VM', value: 'provision'},

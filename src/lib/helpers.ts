@@ -26,7 +26,7 @@ export function getLocalConfig(key = ''): any {
   }
 }
 
-export function updateLocalConfig(data: {[key: string]: any}) {
+export async function updateLocalConfig(data: {[key: string]: any}) {
   const mergedData = Object.assign(getLocalConfig(), data)
   return fs.writeFile('config.local.yaml', yaml.safeDump(mergedData))
 }
