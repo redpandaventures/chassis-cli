@@ -206,6 +206,17 @@ export default class Create extends Base {
         )
       },
       {
+        title: 'Install Chassis modules',
+        task: () => {
+          logger.add('Install latest Chassis modules.')
+          const subprocess = execa('git', ['submodule', 'update', '--init', '--remote'], {cwd: projectPath})
+          if (subprocess.all) {
+            subprocess.all.pipe(logger.stream())
+            return subprocess.all.pipe(split(/\r?\n/, null))
+          }
+        }
+      },
+      {
         title: 'Provision the new Chassis project',
         enabled: () => !flags.skipVagrant,
         task: () => {

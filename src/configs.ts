@@ -28,12 +28,12 @@ export const extensions: {name: string, value: string, checked: boolean}[] = [
     value: 'chassis/phpini',
     checked: false,
   }, {
-    name: 'yarn',
-    value: 'chassis/yarn',
-    checked: false,
-  }, {
     name: 'nodejs',
     value: 'chassis/nodejs',
+    checked: false,
+  }, {
+    name: 'yarn',
+    value: 'chassis/yarn',
     checked: false,
   }, {
     name: 'Fish',
