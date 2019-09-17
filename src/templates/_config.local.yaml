@@ -1,8 +1,9 @@
 hosts:
     - <%= domain %>
 
-# No multisite.
+<% if (multisite != 'No') { %>
 multisite: <%= multisite %>
+<% } %>
 
 # Extensions
 extensions:
