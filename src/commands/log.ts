@@ -5,7 +5,7 @@ import {homedir} from 'os'
 import path from 'path'
 
 import Base from '../lib/base'
-import {getLocalConfig, isChassisDir} from '../lib/helpers'
+import {getLocalConfig, isChassisDir, rreaddirSync} from '../lib/helpers'
 
 export default class Log extends Base {
   static description = 'View chassis logs'
@@ -26,6 +26,13 @@ export default class Log extends Base {
         return f.substr(-4) === '.log'
       })
       .map(f => ({name: f, value: path.resolve(logDir, f)}))
+
+    if (domain) {
+      let localLogs = rreaddirSync('logs')
+        .filter(f => f.substr(-4) === '.log')
+      .map(f => ({name: f, value: path.resolve(process.cwd(), f)}))
+      logFiles = logFiles.concat(localLogs)
+    }
 
     if (logFiles.length === 0)
       this.log("Can't find any log for current project")

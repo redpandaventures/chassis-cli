@@ -1,6 +1,7 @@
 import {execSync} from 'child_process'
 import fs from 'fs-extra'
 import yaml from 'js-yaml'
+import path from 'path'
 
 export function isChassisDir() {
   let files = fs.readdirSync(process.cwd())
@@ -50,4 +51,13 @@ export function getVMStatus() {
     .slice(-1)
 
   return status.replace(/\r?\n|\r/, '')
+}
+
+export function rreaddirSync(dir: string, allFiles: string[] = []) {
+  const files = fs.readdirSync(dir).map(f => path.join(dir, f))
+  allFiles.push(...files)
+  files.forEach(f => {
+    fs.statSync(f).isDirectory() && rreaddirSync(f, allFiles)
+  })
+  return allFiles
 }
