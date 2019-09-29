@@ -30,7 +30,7 @@ export default class Log extends Base {
     if (domain) {
       let localLogs = rreaddirSync('logs')
         .filter(f => f.substr(-4) === '.log')
-      .map(f => ({name: f, value: path.resolve(process.cwd(), f)}))
+        .map(f => ({name: f, value: path.resolve(process.cwd(), f)}))
       logFiles = logFiles.concat(localLogs)
     }
 
