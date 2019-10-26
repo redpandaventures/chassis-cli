@@ -3,20 +3,23 @@ import fs from 'fs-extra'
 import yaml from 'js-yaml'
 import path from 'path'
 
-export function isChassisDir(): any {
+export function isChassisDir(dir = ''): any {
+  if (! dir)
+    dir = process.cwd()
   try {
-    const files = fs.readdirSync(process.cwd())
+    const files = fs.readdirSync(dir)
     const gotIt = files.includes('Vagrantfile')
       && files.includes('content')
       && files.includes('config.yaml')
       && files.includes('config.yaml')
       && files.includes('wp-config.php')
 
-    if (gotIt)
+    if (gotIt) {
+      process.chdir(dir)
       return true
+    }
 
-    process.chdir(path.resolve(process.cwd(), '..'))
-    return isChassisDir()
+    return isChassisDir(path.resolve(dir, '..'))
   } catch (err) { // tslint:disable-line
     return false
   }
