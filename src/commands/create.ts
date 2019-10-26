@@ -5,7 +5,6 @@ import fs from 'fs-extra'
 import inquirer from 'inquirer'
 import Listr from 'listr'
 import notifier from 'node-notifier'
-import {homedir} from 'os'
 import path from 'path'
 import split from 'split'
 
@@ -94,7 +93,6 @@ export default class Create extends Base {
     const params = {...configs.defaults, ...responses, ...flags}
     const logger = new Logger(params.domain)
     const projectPath = path.resolve(process.cwd(), params.name)
-    const cachePath = path.resolve(homedir(), '.chassis/cache/Chassis')
 
     logger.add(
       `Begin creating new Chassis project with params: ${JSON.stringify(params)}`
@@ -113,84 +111,15 @@ export default class Create extends Base {
         }
       },
       {
-        title: 'Prepare Chassis',
-        task: () => new Listr([
-          {
-            title: 'Check if cache presents',
-            task: ctx => {
-              if (fs.existsSync(cachePath)) {
-                ctx.cached = true
-                logger.add('Cache found')
-              } else {
-                logger.add('Cache not found')
-              }
-            }
-          },
-          {
-            title: 'Validate cache',
-            enabled: ctx => !!ctx.cached,
-            task: ctx => execa(
-              'git',
-              ['status', '--porcelain'],
-              {cwd: cachePath}
-            ).then(result => {
-              if (result.stdout !== '') {
-                logger.add('Cache is invalid. Rebuid cache.')
-                ctx.rebuild = true
-              }
-            })
-          },
-          {
-            title: 'Check for update',
-            enabled: ctx => !!ctx.cached,
-            skip: ctx => !!ctx.rebuild,
-            task: () => execa(
-              'git',
-              ['fetch'],
-              {cwd: cachePath}
-            )
-          },
-          {
-            title: 'Compare version',
-            enabled: ctx => !!ctx.cached,
-            skip: ctx => !!ctx.rebuild,
-            task: ctx => execa(
-              'git',
-              ['rev-list', '--count', '--left-only', '@{u}...HEAD'],
-              {cwd: cachePath}
-            ).then(result => {
-              if (result.stdout !== '0') {
-                logger.add('Update is available. Rebuid cache.')
-                ctx.rebuild = true
-              }
-            })
-          },
-          {
-            title: 'Remove the old version',
-            enabled: ctx => !!ctx.rebuild,
-            task: () => fs.remove(cachePath)
-              .then(() => logger.add('Deleted invalid cache.'))
-          },
-          {
-            title: 'Clone Chassis from Github',
-            enabled: ctx => !!ctx.rebuild || !ctx.cached,
-            task: () => {
-              const subprocess = execa(
-                'git',
-                ['clone', 'https://github.com/Chassis/Chassis', cachePath, '--depth', '1']
-              )
-              if (subprocess.all)
-                return subprocess!.all.pipe(split(/\r?\n/, null))
-            }
-          },
-          {
-            title: 'Copy Chassis files',
-            task: () => fs.copy(
-              cachePath,
-              projectPath
-            )
-          },
-        ])
+        title: 'Clone Chassis from Github',
+        task: () => {
+          const subprocess = execa(
+            'git',
+            ['clone', 'https://github.com/Chassis/Chassis', projectPath, '--depth', '1']
+          )
+          if (subprocess.all)
+            return subprocess!.all.pipe(split(/\r?\n/, null))
+        }
       },
       {
         title: 'Create config file',
